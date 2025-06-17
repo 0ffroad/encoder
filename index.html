@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Message Encoder/Decoder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1e1e1e;
+      color: #f0f0f0;
+      padding: 30px;
+      max-width: 700px;
+      margin: auto;
+    }
+    textarea, input {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      resize: vertical;
+    }
+    button {
+      background: #007acc;
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    .key-output {
+      font-family: monospace;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h2>🔐 Random Message Encoder/Decoder</h2>
+
+  <textarea id="input" rows="4" placeholder="Enter your message here..."></textarea>
+
+  <button onclick="encodeMessage()">Encode</button>
+  <button onclick="decodeMessage()">Decode</button>
+
+  <h3>Encoded / Decoded Message:</h3>
+  <textarea id="output" rows="4" readonly></textarea>
+
+  <h3>Key (save this to decode):</h3>
+  <textarea id="keyOutput" rows="2" readonly class="key-output"></textarea>
+
+  <script>
+    let lastKey = [];
+
+    function encodeMessage() {
+      const input = document.getElementById('input').value;
+      let encoded = '';
+      let key = [];
+
+      for (let i = 0; i < input.length; i++) {
+        const shift = Math.floor(Math.random() * 10) + 1;
+        key.push(shift);
+        encoded += String.fromCharCode((input.charCodeAt(i) + shift) % 256);
+      }
+
+      document.getElementById('output').value = encoded;
+      document.getElementById('keyOutput').value = JSON.stringify(key);
+      lastKey = key;
+    }
+
+    function decodeMessage() {
+      const encoded = document.getElementById('input').value;
+      let key;
+
+      try {
+        key = JSON.parse(document.getElementById('keyOutput').value);
+      } catch (e) {
+        alert('Invalid key format!');
+        return;
+      }
+
+      let decoded = '';
+      for (let i = 0; i < encoded.length; i++) {
+        const shift = key[i];
+        decoded += String.fromCharCode((encoded.charCodeAt(i) - shift + 256) % 256);
+      }
+
+      document.getElementById('output').value = decoded;
+    }
+  </script>
+</body>
+</html>
