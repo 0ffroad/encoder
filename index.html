@@ -43,6 +43,26 @@
       font-size: 16px;
       transition: background 0.3s ease;
     }
+<button onclick="toggleHelp()" style="margin-top: 20px;">❓ How to Use</button>
+
+<div id="help" style="display:none; margin-top: 20px; background: #191919; padding: 20px; border-radius: 10px; line-height: 1.6;">
+  <h3>📘 How to Use</h3>
+  <ol>
+    <li><strong>Write your message</strong> in the first box (e.g. "Meet me at midnight").</li>
+    <li><strong>Choose a password</strong> – this acts like a key to lock/unlock your message.</li>
+    <li>Click <strong>Encode</strong> to turn it into secret text.</li>
+    <li>To read it again, paste the secret into the input box, type the <em>same password</em>, then click <strong>Decode</strong>.</li>
+    <li>If the password is wrong, the message won’t decode properly!</li>
+  </ol>
+  <p style="color: gray; font-size: 14px;">Tip: You can use emojis, symbols, or even non-English characters.</p>
+</div>
+
+<script>
+  function toggleHelp() {
+    const help = document.getElementById("help");
+    help.style.display = help.style.display === "none" ? "block" : "none";
+  }
+</script>
 
     input:focus, textarea:focus {
       outline: none;
