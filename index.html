@@ -2,96 +2,92 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Message Encoder/Decoder</title>
+  <title>Simple Encoder/Decoder</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #1e1e1e;
-      color: #f0f0f0;
+      font-family: sans-serif;
+      background: #121212;
+      color: white;
       padding: 30px;
       max-width: 700px;
       margin: auto;
     }
-    textarea, input {
+    input, textarea {
       width: 100%;
-      margin-bottom: 15px;
+      margin: 10px 0;
       padding: 10px;
-      background: #333;
-      color: white;
       border: none;
       border-radius: 8px;
-      resize: vertical;
+      background: #2c2c2c;
+      color: white;
     }
     button {
-      background: #007acc;
+      background: #00bfa5;
+      padding: 10px 20px;
       border: none;
-      padding: 10px 15px;
-      color: white;
       border-radius: 8px;
+      color: white;
+      font-weight: bold;
       cursor: pointer;
       margin-right: 10px;
     }
     button:hover {
-      background: #005fa3;
-    }
-    .key-output {
-      font-family: monospace;
-      white-space: pre-wrap;
-      word-wrap: break-word;
+      background: #008e76;
     }
   </style>
 </head>
 <body>
-  <h2>🔐 Random Message Encoder/Decoder</h2>
+  <h2>🔐 Easy Encoder / Decoder</h2>
 
   <textarea id="input" rows="4" placeholder="Enter your message here..."></textarea>
+  <input type="text" id="password" placeholder="Enter password (used to encode/decode)" />
 
-  <button onclick="encodeMessage()">Encode</button>
-  <button onclick="decodeMessage()">Decode</button>
+  <button onclick="encode()">Encode</button>
+  <button onclick="decode()">Decode</button>
 
-  <h3>Encoded / Decoded Message:</h3>
+  <h3>Result:</h3>
   <textarea id="output" rows="4" readonly></textarea>
 
-  <h3>Key (save this to decode):</h3>
-  <textarea id="keyOutput" rows="2" readonly class="key-output"></textarea>
-
   <script>
-    let lastKey = [];
-
-    function encodeMessage() {
-      const input = document.getElementById('input').value;
-      let encoded = '';
-      let key = [];
-
-      for (let i = 0; i < input.length; i++) {
-        const shift = Math.floor(Math.random() * 10) + 1;
-        key.push(shift);
-        encoded += String.fromCharCode((input.charCodeAt(i) + shift) % 256);
+    function getShiftValues(password, length) {
+      let shifts = [];
+      for (let i = 0; i < length; i++) {
+        const shift = password.charCodeAt(i % password.length) % 10 + 1;
+        shifts.push(shift);
       }
-
-      document.getElementById('output').value = encoded;
-      document.getElementById('keyOutput').value = JSON.stringify(key);
-      lastKey = key;
+      return shifts;
     }
 
-    function decodeMessage() {
-      const encoded = document.getElementById('input').value;
-      let key;
+    function encode() {
+      const text = document.getElementById('input').value;
+      const password = document.getElementById('password').value;
+      if (!password) return alert("Please enter a password!");
 
-      try {
-        key = JSON.parse(document.getElementById('keyOutput').value);
-      } catch (e) {
-        alert('Invalid key format!');
-        return;
+      const shifts = getShiftValues(password, text.length);
+      let result = '';
+
+      for (let i = 0; i < text.length; i++) {
+        const shifted = (text.charCodeAt(i) + shifts[i]) % 256;
+        result += String.fromCharCode(shifted);
       }
 
-      let decoded = '';
-      for (let i = 0; i < encoded.length; i++) {
-        const shift = key[i];
-        decoded += String.fromCharCode((encoded.charCodeAt(i) - shift + 256) % 256);
+      document.getElementById('output').value = result;
+    }
+
+    function decode() {
+      const text = document.getElementById('input').value;
+      const password = document.getElementById('password').value;
+      if (!password) return alert("Please enter the same password used to encode!");
+
+      const shifts = getShiftValues(password, text.length);
+      let result = '';
+
+      for (let i = 0; i < text.length; i++) {
+        const shifted = (text.charCodeAt(i) - shifts[i] + 256) % 256;
+        result += String.fromCharCode(shifted);
       }
 
-      document.getElementById('output').value = decoded;
+      document.getElementById('output').value = result;
     }
   </script>
 </body>
