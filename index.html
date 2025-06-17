@@ -2,51 +2,120 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Simple Encoder/Decoder</title>
+  <title>🔐 Encoder / Decoder</title>
   <style>
+    :root {
+      --bg: #1b1b1b;
+      --panel: #282828;
+      --text: #f0f0f0;
+      --accent: #00bfa5;
+    }
+
     body {
-      font-family: sans-serif;
-      background: #121212;
-      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
       padding: 30px;
-      max-width: 700px;
-      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    input, textarea {
+
+    .container {
+      background: var(--panel);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(0, 255, 204, 0.08);
       width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: #2c2c2c;
-      color: white;
+      max-width: 600px;
     }
+
+    textarea, input {
+      width: 100%;
+      background: #121212;
+      color: var(--text);
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      background: #1e1e1e;
+    }
+
     button {
-      background: #00bfa5;
+      background: var(--accent);
+      color: white;
       padding: 10px 20px;
       border: none;
-      border-radius: 8px;
-      color: white;
+      border-radius: 10px;
       font-weight: bold;
+      font-size: 16px;
       cursor: pointer;
       margin-right: 10px;
+      transition: background 0.3s ease;
     }
+
     button:hover {
-      background: #008e76;
+      background: #009e88;
+    }
+
+    .strength {
+      height: 10px;
+      border-radius: 10px;
+      margin-top: -15px;
+      margin-bottom: 20px;
+      transition: background 0.3s ease;
+    }
+
+    .strength.weak {
+      background: red;
+    }
+
+    .strength.medium {
+      background: orange;
+    }
+
+    .strength.strong {
+      background: limegreen;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-  <h2>🔐Encoder / Decoder</h2>
+  <div class="container fade-in">
+    <h2>🔐 Encode / Decode Secret Messages</h2>
 
-  <textarea id="input" rows="4" placeholder="Enter your message here..."></textarea>
-  <input type="text" id="password" placeholder="Enter password (used to encode/decode)" />
+    <textarea id="input" rows="4" placeholder="Enter your message..."></textarea>
+    <input type="text" id="password" placeholder="Enter password..." oninput="checkPasswordStrength()">
+    <div id="strengthBar" class="strength"></div>
 
-  <button onclick="encode()">Encode</button>
-  <button onclick="decode()">Decode</button>
+    <div style="margin-bottom: 20px;">
+      <button onclick="encode()">Encode</button>
+      <button onclick="decode()">Decode</button>
+    </div>
 
-  <h3>Result:</h3>
-  <textarea id="output" rows="4" readonly></textarea>
+    <textarea id="output" rows="4" placeholder="Result..." readonly></textarea>
+  </div>
 
   <script>
     function getShiftValues(password, length) {
@@ -65,7 +134,6 @@
 
       const shifts = getShiftValues(password, text.length);
       let result = '';
-
       for (let i = 0; i < text.length; i++) {
         const shifted = (text.charCodeAt(i) + shifts[i]) % 256;
         result += String.fromCharCode(shifted);
@@ -77,17 +145,29 @@
     function decode() {
       const text = document.getElementById('input').value;
       const password = document.getElementById('password').value;
-      if (!password) return alert("Please enter the same password used to encode!");
+      if (!password) return alert("Please enter the password used to encode!");
 
       const shifts = getShiftValues(password, text.length);
       let result = '';
-
       for (let i = 0; i < text.length; i++) {
         const shifted = (text.charCodeAt(i) - shifts[i] + 256) % 256;
         result += String.fromCharCode(shifted);
       }
 
       document.getElementById('output').value = result;
+    }
+
+    function checkPasswordStrength() {
+      const pass = document.getElementById('password').value;
+      const strength = document.getElementById('strengthBar');
+
+      if (pass.length < 4 || ['123', 'abc', 'pass', '111'].includes(pass.toLowerCase())) {
+        strength.className = 'strength weak';
+      } else if (pass.length < 8) {
+        strength.className = 'strength medium';
+      } else {
+        strength.className = 'strength strong';
+      }
     }
   </script>
 </body>
